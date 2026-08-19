@@ -33,8 +33,12 @@ jobs:
 
       - name: Inject Kotlin 2.3.0 (fix play-services-ads compatibility)
         run: |
+          # 1. Force Kotlin Gradle plugin version in root buildscript
+          sed -i "s|classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')|classpath('org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0')|" android/build.gradle
+          # 2. Set ext.kotlinVersion for submodules that read rootProject.ext
           sed -i 's|apply plugin: "expo-root-project"|ext.kotlinVersion = "2.3.0"\napply plugin: "expo-root-project"|' android/build.gradle
-          grep -n 'kotlinVersion' android/build.gradle
+          echo '--- build.gradle (head) ---'
+          cat android/build.gradle
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
