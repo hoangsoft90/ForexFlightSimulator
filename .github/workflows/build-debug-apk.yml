@@ -58,6 +58,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
+      - name: Enable JS bundle in debug APK
+        run: |
+          echo 'bundleInDebug=true' >> android/gradle.properties
+          echo 'hermesEnabled=true' >> android/gradle.properties
+          echo '--- gradle.properties (tail) ---'
+          tail -5 android/gradle.properties
+
       - name: Build Debug APK (Gradle)
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
