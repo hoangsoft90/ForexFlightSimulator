@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "305860765043",
+    "project_id": "forexflightsimulator",
+    "storage_bucket": "forexflightsimulator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305860765043:android:4746ee9b2088a871a59106",
+        "android_client_info": {
+          "package_name": "com.forexflightsimulator.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr7EPvWCez3vskW1UrQBfQfse-nG_Qwfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

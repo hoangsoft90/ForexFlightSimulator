@@ -14,7 +14,7 @@ export interface ReferenceZone {
   sl: number;           // reference SL price (for correct direction)
   tp: number;           // reference TP price (for correct direction)
   minRR: number;        // minimum risk/reward for a good score
-  direction: 'buy' | 'sell';
+  direction: 'buy' | 'sell' | 'wait';
   setupType: string;    // e.g. 'pullback-support', 'breakout'
   fixedRiskPct: number; // risk % per trade (sub-level 1a: fixed, hidden from UI)
 }
