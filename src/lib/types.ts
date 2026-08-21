@@ -108,4 +108,5 @@ export interface TraderProfile {
   sub: string;     // e.g. '1a'
   rank: string;    // e.g. 'Novice'
   sessionsCompleted: number;
+  completedPacks: string[]; // pack IDs that user has completed
 }

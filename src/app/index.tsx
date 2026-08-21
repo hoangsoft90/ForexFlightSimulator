@@ -3,29 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTraderStore } from '@/store/trader-store';
-import { useSessionStore } from '@/store/session-store';
 import { PACKS } from '@/data/packs';
 import { ScoreChip } from '@/components/score-chip';
 import { colors, spacing, font, radius } from '@/constants/theme';
-import { IconPlayerPlay } from '@tabler/icons-react-native';
+import { IconList } from '@tabler/icons-react-native';
 import { AdBanner } from '@/components/ad-banner';
 
 export default function HomeScreen() {
   const { scores, level, sub, rank, sessionsCompleted } = useTraderStore();
-  const { startSession } = useSessionStore();
   const insets = useSafeAreaInsets();
 
-  const handleStartSession = () => {
-    // Cycle through packs: session 0 → pack 0, session 1 → pack 1, etc.
-    const packIndex = sessionsCompleted % PACKS.length;
-    const pack = PACKS[packIndex];
-    startSession(pack);
-    router.push('/decision');
+  const handleGoToLevels = () => {
+    router.push('/levels');
   };
-
-  // Show which scenario is next
-  const nextPackIndex = sessionsCompleted % PACKS.length;
-  const nextPack = PACKS[nextPackIndex];
 
   return (
     <ScrollView
@@ -60,25 +50,20 @@ export default function HomeScreen() {
         </Text>
       )}
 
-      {/* Next scenario preview */}
-      <View style={styles.scenarioPreview}>
-        <Text style={styles.scenarioLabel}>Next scenario</Text>
-        <Text style={styles.scenarioName}>
-          {nextPack.symbol} · {nextPack.timeframe} · {nextPack.referenceZone.setupType}
-        </Text>
-        <Text style={styles.scenarioHint} numberOfLines={1}>
-          {nextPack.contextPrompt}
-        </Text>
+      {/* Packs progress */}
+      <View style={styles.packsPreview}>
+        <Text style={styles.packsLabel}>Scenario Packs</Text>
+        <Text style={styles.packsCount}>{PACKS.length} available</Text>
       </View>
 
       {/* CTA */}
       <TouchableOpacity
         style={styles.cta}
-        onPress={handleStartSession}
+        onPress={handleGoToLevels}
         activeOpacity={0.8}
       >
-        <IconPlayerPlay size={20} color="#FFFFFF" strokeWidth={2} />
-        <Text style={styles.ctaText}>Start session</Text>
+        <IconList size={20} color="#FFFFFF" strokeWidth={2} />
+        <Text style={styles.ctaText}>Choose scenario</Text>
       </TouchableOpacity>
       {/* Banner Ad */}
       <AdBanner />
@@ -133,27 +118,23 @@ const styles = StyleSheet.create({
     fontSize: font.sm,
     color: colors.textMuted,
   },
-  scenarioPreview: {
+  packsPreview: {
     backgroundColor: '#F1F5F9',
     borderRadius: radius.sm,
     padding: spacing.md,
     width: '100%',
-    gap: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  scenarioLabel: {
-    fontSize: font.xs,
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  scenarioName: {
+  packsLabel: {
     fontSize: font.sm,
-    fontWeight: '600',
+    fontWeight: '500',
     color: colors.text,
   },
-  scenarioHint: {
-    fontSize: font.xs,
-    color: colors.textSecondary,
+  packsCount: {
+    fontSize: font.sm,
+    color: colors.textMuted,
   },
   cta: {
     flexDirection: 'row',

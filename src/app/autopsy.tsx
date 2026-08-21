@@ -13,7 +13,7 @@ import { showInterstitial, preloadInterstitial } from '@/lib/ads';
 
 export default function AutopsyScreen() {
   const { pack, decision, autopsy } = useSessionStore();
-  const { completeSession } = useTraderStore();
+  const { completeSession, completePack } = useTraderStore();
   const insets = useSafeAreaInsets();
 
   // Persist scores on first render (only runs once thanks to Zustand)
@@ -21,7 +21,10 @@ export default function AutopsyScreen() {
     if (autopsy?.scores) {
       completeSession(autopsy.scores);
     }
-  }, [autopsy?.scores, completeSession]);
+    if (pack) {
+      completePack(pack.id);
+    }
+  }, [autopsy?.scores, completeSession, pack, completePack]);
 
   // Android hardware back: always go to Home (not back to Decision)
   useEffect(() => {

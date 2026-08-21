@@ -6,6 +6,8 @@ import type { TraderProfile, ScoreTrack, ComponentScores } from '@/lib/types';
 interface TraderState extends TraderProfile {
   /** Update scores after a completed session. Uses running mean per component. */
   completeSession: (scores: ComponentScores) => void;
+  /** Mark a pack as completed. */
+  completePack: (packId: string) => void;
   /** Reset to fresh profile (for testing). */
   reset: () => void;
 }
@@ -23,6 +25,7 @@ const INITIAL_STATE: TraderProfile = {
   sub: '1a',
   rank: 'Novice',
   sessionsCompleted: 0,
+  completedPacks: [],
 };
 
 function mergeScore(prev: ScoreTrack, newScore: number): ScoreTrack {
@@ -51,6 +54,13 @@ export const useTraderStore = create<TraderState>()(
               : state.scores.discipline,
           },
           sessionsCompleted: state.sessionsCompleted + 1,
+        })),
+
+      completePack: (packId) =>
+        set((state) => ({
+          completedPacks: state.completedPacks.includes(packId)
+            ? state.completedPacks
+            : [...state.completedPacks, packId],
         })),
 
       reset: () => set(INITIAL_STATE),
