@@ -3,17 +3,30 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTraderStore } from '@/store/trader-store';
-import { PACKS } from '@/data/packs';
+import { useSessionStore } from '@/store/session-store';
+import { PACKS, getNextPack, getLevelDef, getLevelProgress, LEVELS } from '@/data/packs';
 import { ScoreChip } from '@/components/score-chip';
 import { colors, spacing, font, radius } from '@/constants/theme';
-import { IconList, IconSettings } from '@tabler/icons-react-native';
+import { IconList, IconSettings, IconPlayerPlay } from '@tabler/icons-react-native';
 import { AdBanner } from '@/components/ad-banner';
 import { useI18n } from '@/i18n/context';
 
 export default function HomeScreen() {
-  const { scores, level, sub, rank, sessionsCompleted } = useTraderStore();
+  const { scores, level, sub, rank, sessionsCompleted, completedPacks, currentLevelProgress } = useTraderStore();
+  const { startSession } = useSessionStore();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+
+  const nextPack = getNextPack({ scores, level, sub, rank, sessionsCompleted, completedPacks, currentLevelProgress });
+  const levelDef = getLevelDef(level);
+  const levelProgress = getLevelProgress(level, completedPacks);
+
+  const handlePlayNext = () => {
+    if (nextPack) {
+      startSession(nextPack);
+      router.push('/decision');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -35,16 +48,39 @@ export default function HomeScreen() {
 
         {/* Avatar with level badge */}
         <View style={styles.avatarRow}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>L{level}</Text>
+          <View style={[styles.avatar, { borderColor: levelDef?.color ?? colors.primary }]}>
+            <Text style={[styles.avatarText, { color: levelDef?.color ?? colors.primary }]}>L{level}</Text>
           </View>
         </View>
 
         {/* Level label */}
         <Text style={styles.levelLabel}>
-          {t('home.level')} {level} · {t('home.sub')} {sub}
+          {lang === 'vi' ? levelDef?.nameVi : levelDef?.name} · {t('home.sub')} {sub}
         </Text>
         <Text style={styles.rankLabel}>{rank}</Text>
+
+        {/* Level progress bar */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>
+              {lang === 'vi' ? 'Tiến độ' : 'Progress'}
+            </Text>
+            <Text style={styles.progressValue}>
+              {levelProgress.completed}/{levelProgress.total}
+            </Text>
+          </View>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${levelProgress.percentage}%`,
+                  backgroundColor: levelDef?.color ?? colors.primary,
+                },
+              ]}
+            />
+          </View>
+        </View>
 
         {/* 4-stat grid: Reading / Entry / Risk / Discipline */}
         <View style={styles.grid}>
@@ -61,20 +97,35 @@ export default function HomeScreen() {
           </Text>
         )}
 
-        {/* Packs progress */}
-        <View style={styles.packsPreview}>
-          <Text style={styles.packsLabel}>{t('home.scenarioPacks')}</Text>
-          <Text style={styles.packsCount}>{t('home.available', { count: PACKS.length })}</Text>
-        </View>
+        {/* Play Next Session button */}
+        {nextPack ? (
+          <TouchableOpacity
+            style={styles.playBtn}
+            onPress={handlePlayNext}
+            activeOpacity={0.8}
+          >
+            <IconPlayerPlay size={20} color="#FFFFFF" strokeWidth={2} />
+            <View style={styles.playBtnText}>
+              <Text style={styles.playBtnLabel}>{lang === 'vi' ? 'TIẾP TỤC HỌC' : 'PLAY NEXT SESSION'}</Text>
+              <Text style={styles.playBtnSub} numberOfLines={1}>
+                {lang === 'vi' ? nextPack.setupTypeVi : nextPack.referenceZone.setupType}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.allDoneContainer}>
+            <Text style={styles.allDoneText}>🎉 {lang === 'vi' ? 'Hoàn thành tất cả!' : 'All done!'}</Text>
+          </View>
+        )}
 
-        {/* CTA */}
+        {/* Choose scenario button */}
         <TouchableOpacity
-          style={styles.cta}
+          style={styles.chooseBtn}
           onPress={() => router.push('/levels')}
           activeOpacity={0.8}
         >
-          <IconList size={20} color="#FFFFFF" strokeWidth={2} />
-          <Text style={styles.ctaText}>{t('home.chooseScenario')}</Text>
+          <IconList size={18} color={colors.textSecondary} strokeWidth={1.5} />
+          <Text style={styles.chooseBtnText}>{t('home.chooseScenario')}</Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -118,12 +169,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: colors.primary,
   },
   avatarText: {
     fontSize: font.xxl,
     fontWeight: '600',
-    color: colors.primary,
   },
   levelLabel: {
     fontSize: font.md,
@@ -133,6 +182,33 @@ const styles = StyleSheet.create({
     fontSize: font.sm,
     color: colors.textMuted,
     marginTop: -spacing.sm,
+  },
+  progressContainer: {
+    width: '100%',
+    gap: spacing.xs,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  progressLabel: {
+    fontSize: font.xs,
+    color: colors.textMuted,
+  },
+  progressValue: {
+    fontSize: font.xs,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: colors.borderLight,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
   },
   grid: {
     flexDirection: 'row',
@@ -144,38 +220,62 @@ const styles = StyleSheet.create({
     fontSize: font.sm,
     color: colors.textMuted,
   },
-  packsPreview: {
-    backgroundColor: '#F1F5F9',
-    borderRadius: radius.sm,
-    padding: spacing.md,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  packsLabel: {
-    fontSize: font.sm,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  packsCount: {
-    fontSize: font.sm,
-    color: colors.textMuted,
-  },
-  cta: {
+  playBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
     backgroundColor: colors.primary,
     width: '100%',
     paddingVertical: spacing.lg,
     borderRadius: radius.sm,
     marginTop: spacing.md,
   },
-  ctaText: {
+  playBtnText: {
+    alignItems: 'flex-start',
+  },
+  playBtnLabel: {
     color: '#FFFFFF',
     fontSize: font.md,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  playBtnSub: {
+    color: '#FFFFFF',
+    fontSize: font.xs,
+    opacity: 0.8,
+    marginTop: 2,
+  },
+  allDoneContainer: {
+    backgroundColor: colors.green + '10',
+    borderWidth: 1,
+    borderColor: colors.green + '30',
+    width: '100%',
+    paddingVertical: spacing.lg,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  allDoneText: {
+    fontSize: font.md,
+    fontWeight: '500',
+    color: colors.green,
+  },
+  chooseBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.surface,
+    width: '100%',
+    paddingVertical: spacing.md,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  chooseBtnText: {
+    color: colors.textSecondary,
+    fontSize: font.sm,
     fontWeight: '500',
   },
 });

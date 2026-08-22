@@ -1,15 +1,21 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SectionList } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTraderStore } from '@/store/trader-store';
 import { useSessionStore } from '@/store/session-store';
-import { PACKS } from '@/data/packs';
+import {
+  LEVELS,
+  getPacksForLevel,
+  getLevelProgress,
+  getUnlockedLevels,
+} from '@/data/packs';
 import { colors, spacing, font, radius } from '@/constants/theme';
 import {
   IconArrowLeft,
   IconCheck,
   IconPlayerPlay,
+  IconLock,
 } from '@tabler/icons-react-native';
 import { AdBanner } from '@/components/ad-banner';
 import { useI18n } from '@/i18n/context';
@@ -31,88 +37,118 @@ function getSetupColor(setupType: string): string {
   return key ? SETUP_COLORS[key] : colors.primary;
 }
 
-// ── Lazy loading config ────────────────────────────────────────────────────────
-const INITIAL_BATCH = 20;
-const LOAD_MORE_BATCH = 15;
-const CARD_HEIGHT = 80; // estimated card height for getItemLayout
+interface SectionData {
+  title: string;
+  titleVi: string;
+  level: number;
+  color: string;
+  unlocked: boolean;
+  data: ScenarioPack[];
+  progress: { total: number; completed: number; percentage: number };
+}
 
 export default function LevelsScreen() {
-  const { completedPacks } = useTraderStore();
+  const { completedPacks, scores, level: traderLevel, sub, rank, sessionsCompleted, currentLevelProgress } = useTraderStore();
   const { startSession } = useSessionStore();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
-  const [visibleCount, setVisibleCount] = useState(INITIAL_BATCH);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const unlockedLevels = useMemo(
+    () => getUnlockedLevels({ scores, level: traderLevel, sub, rank, sessionsCompleted, completedPacks, currentLevelProgress }),
+    [scores, traderLevel, sub, rank, sessionsCompleted, completedPacks, currentLevelProgress],
+  );
 
-  const visiblePacks = useMemo(() => PACKS.slice(0, visibleCount), [visibleCount]);
-  const hasMore = visibleCount < PACKS.length;
+  const sections: SectionData[] = useMemo(() => {
+    return LEVELS.map((levelDef) => {
+      const packs = getPacksForLevel(levelDef.level);
+      const progress = getLevelProgress(levelDef.level, completedPacks);
+      const isUnlocked = unlockedLevels.includes(levelDef.level);
+
+      return {
+        title: `Level ${levelDef.level}: ${levelDef.name}`,
+        titleVi: `Cấp ${levelDef.level}: ${levelDef.nameVi}`,
+        level: levelDef.level,
+        color: levelDef.color,
+        unlocked: isUnlocked,
+        data: isUnlocked ? packs : [], // Don't show packs if locked
+        progress,
+      };
+    });
+  }, [completedPacks, unlockedLevels]);
 
   const handleSelectPack = (pack: ScenarioPack) => {
     startSession(pack);
     router.push('/decision');
   };
 
-  const handleEndReached = useCallback(() => {
-    if (!hasMore || loadingMore) return;
-    setLoadingMore(true);
-    // Simulate a tiny delay so the spinner is visible (prevents jank)
-    setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + LOAD_MORE_BATCH, PACKS.length));
-      setLoadingMore(false);
-    }, 150);
-  }, [hasMore, loadingMore]);
-
-  const renderItem = useCallback(({ item: pack, index }: { item: ScenarioPack; index: number }) => {
-    const isCompleted = completedPacks.includes(pack.id);
-    const setupColor = getSetupColor(pack.referenceZone.setupType);
-
-    return (
-      <TouchableOpacity
-        style={[styles.card, isCompleted && styles.cardCompleted]}
-        onPress={() => handleSelectPack(pack)}
-        activeOpacity={0.7}
-      >
-        {/* Number badge */}
-        <View style={[styles.numberBadge, { backgroundColor: setupColor + '15' }]}>
-          <Text style={[styles.numberText, { color: setupColor }]}>
-            {index + 1}
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: SectionData }) => (
+      <View style={[styles.sectionHeader, { borderLeftColor: section.color }]}>
+        <View style={styles.sectionHeaderLeft}>
+          <Text style={styles.sectionTitle}>
+            {lang === 'vi' ? section.titleVi : section.title}
           </Text>
+          {!section.unlocked && (
+            <View style={styles.lockBadge}>
+              <IconLock size={10} color={colors.textMuted} strokeWidth={2} />
+              <Text style={styles.lockText}>{lang === 'vi' ? 'Khóa' : 'Locked'}</Text>
+            </View>
+          )}
         </View>
+        <Text style={styles.sectionProgress}>
+          {section.progress.completed}/{section.progress.total}
+        </Text>
+      </View>
+    ),
+    [lang],
+  );
 
-        {/* Card content */}
-        <View style={styles.cardBody}>
-          <View style={styles.cardTop}>
-            <Text style={styles.cardTitle}>{pack.symbol}</Text>
-            <Text style={styles.cardTimeframe}>{pack.timeframe}</Text>
-            {isCompleted && (
-              <View style={[styles.checkBadge, { backgroundColor: colors.green }]}>
-                <IconCheck size={12} color="#FFFFFF" strokeWidth={3} />
-              </View>
-            )}
+  const renderItem = useCallback(
+    ({ item: pack, index, section }: { item: ScenarioPack; index: number; section: SectionData }) => {
+      const isCompleted = completedPacks.includes(pack.id);
+      const setupColor = getSetupColor(pack.referenceZone.setupType);
+
+      return (
+        <TouchableOpacity
+          style={[styles.card, isCompleted && styles.cardCompleted]}
+          onPress={() => handleSelectPack(pack)}
+          activeOpacity={0.7}
+        >
+          {/* Number badge */}
+          <View style={[styles.numberBadge, { backgroundColor: setupColor + '15' }]}>
+            <Text style={[styles.numberText, { color: setupColor }]}>
+              {index + 1}
+            </Text>
           </View>
-          <Text style={[styles.cardSetup, { color: setupColor }]}>
-            {pack.referenceZone.setupType}
-          </Text>
-          <Text style={styles.cardPrompt} numberOfLines={1}>
-            {pack.contextPrompt}
-          </Text>
-        </View>
 
-        {/* Arrow */}
-        <IconPlayerPlay size={18} color={colors.textMuted} strokeWidth={1.5} />
-      </TouchableOpacity>
-    );
-  }, [completedPacks, startSession]);
+          {/* Card content */}
+          <View style={styles.cardBody}>
+            <View style={styles.cardTop}>
+              <Text style={styles.cardTitle}>{pack.symbol}</Text>
+              <Text style={styles.cardTimeframe}>{pack.timeframe}</Text>
+              {isCompleted && (
+                <View style={[styles.checkBadge, { backgroundColor: colors.green }]}>
+                  <IconCheck size={12} color="#FFFFFF" strokeWidth={3} />
+                </View>
+              )}
+            </View>
+            <Text style={[styles.cardSetup, { color: setupColor }]}>
+              {lang === 'vi' ? pack.setupTypeVi : pack.referenceZone.setupType}
+            </Text>
+            <Text style={styles.cardPrompt} numberOfLines={1}>
+              {lang === 'vi' ? pack.contextPromptVi : pack.contextPrompt}
+            </Text>
+          </View>
+
+          {/* Arrow */}
+          <IconPlayerPlay size={18} color={colors.textMuted} strokeWidth={1.5} />
+        </TouchableOpacity>
+      );
+    },
+    [completedPacks, lang],
+  );
 
   const keyExtractor = useCallback((item: ScenarioPack) => item.id, []);
-
-  // getItemLayout for FlatList optimization — avoids measuring each card
-  const getItemLayout = useCallback((_: any, index: number) => ({
-    length: CARD_HEIGHT + 8, // card height + gap
-    offset: (CARD_HEIGHT + 8) * index,
-    index,
-  }), []);
 
   return (
     <View style={styles.container}>
@@ -125,45 +161,30 @@ export default function LevelsScreen() {
         <View style={{ width: 36 }} />
       </View>
 
-      <FlatList
-        data={visiblePacks}
+      <SectionList
+        sections={sections}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        getItemLayout={getItemLayout}
-        // Performance tuning for 100 items
-        initialNumToRender={INITIAL_BATCH}
-        maxToRenderPerBatch={LOAD_MORE_BATCH}
+        renderSectionHeader={renderSectionHeader}
+        stickySectionHeadersEnabled={false}
+        // Performance tuning
+        initialNumToRender={15}
+        maxToRenderPerBatch={10}
         windowSize={5}
         removeClippedSubviews={true}
-        // Lazy loading
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.4}
-        ListHeaderComponent={
-          <Text style={styles.progressText}>
-            {t('levels.completed', { done: completedPacks.length, total: PACKS.length })}
-          </Text>
-        }
-        ListFooterComponent={
-          loadingMore ? (
-            <ActivityIndicator style={{ paddingVertical: spacing.lg }} color={colors.primary} />
-          ) : hasMore ? (
-            <Text style={styles.loadMoreHint}>
-              {t('levels.scrollMore')}
-            </Text>
-          ) : (
-            <Text style={styles.loadMoreHint}>
-              {t('levels.allLoaded', { count: PACKS.length })}
-            </Text>
-          )
-        }
         contentContainerStyle={{
           padding: spacing.xl,
-          paddingBottom: insets.bottom + 72, // space for fixed AdBanner
+          paddingBottom: insets.bottom + 72,
           gap: spacing.sm,
         }}
+        ListFooterComponent={
+          <Text style={styles.footerText}>
+            {t('levels.allLoaded', { count: 100 })}
+          </Text>
+        }
       />
 
-      {/* Fixed ad banner — always above Android nav bar */}
+      {/* Fixed ad banner */}
       <AdBanner />
     </View>
   );
@@ -196,16 +217,43 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text,
   },
-  progressText: {
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.sm,
+    borderLeftWidth: 3,
+    marginTop: spacing.sm,
+  },
+  sectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: font.md,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  sectionProgress: {
     fontSize: font.sm,
     color: colors.textMuted,
-    marginBottom: spacing.sm,
   },
-  loadMoreHint: {
+  lockBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.borderLight,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  lockText: {
     fontSize: font.xs,
     color: colors.textMuted,
-    textAlign: 'center',
-    paddingVertical: spacing.lg,
   },
   card: {
     flexDirection: 'row',
@@ -271,5 +319,11 @@ const styles = StyleSheet.create({
     fontSize: font.xs,
     color: colors.textMuted,
     marginTop: 2,
+  },
+  footerText: {
+    fontSize: font.xs,
+    color: colors.textMuted,
+    textAlign: 'center',
+    paddingVertical: spacing.lg,
   },
 });

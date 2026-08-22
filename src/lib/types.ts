@@ -25,8 +25,10 @@ export interface ScenarioPack {
   timeframe: string;    // e.g. 'M15'
   candles: Candle[];
   referenceZone: ReferenceZone;
-  contextPrompt: string; // 1-line, ≤20 words
-  decisionIndex: number; // candle index where user decides
+  contextPrompt: string;   // 1-line, ≤20 words (English)
+  contextPromptVi: string; // Vietnamese translation
+  setupTypeVi: string;     // Vietnamese label for setupType
+  decisionIndex: number;   // candle index where user decides
 }
 
 // ─── Decision & Session ──────────────────────────────────────────────────────
@@ -76,8 +78,10 @@ export interface ComponentScores {
 
 export interface RootCauseFinding {
   id: string;
-  label: string;        // short title e.g. "FOMO entry"
-  description: string;  // concrete explanation
+  label: string;          // short title (English)
+  labelVi: string;        // Vietnamese label
+  description: string;    // concrete explanation (English)
+  descriptionVi: string;  // Vietnamese description
   type: 'error' | 'positive';
 }
 
@@ -104,9 +108,10 @@ export interface TraderProfile {
     risk: ScoreTrack;
     discipline: ScoreTrack;
   };
-  level: number;
-  sub: string;     // e.g. '1a'
-  rank: string;    // e.g. 'Novice'
+  level: number;              // highest unlocked level (1-4)
+  sub: string;                // e.g. '1a'
+  rank: string;               // e.g. 'Novice'
   sessionsCompleted: number;
-  completedPacks: string[]; // pack IDs that user has completed
+  completedPacks: string[];   // pack IDs that user has completed
+  currentLevelProgress: number; // % of current level packs completed
 }

@@ -9,13 +9,18 @@ export const translations = {
     'home.scenarioPacks': 'Scenario Packs',
     'home.available': '{count} available',
     'home.chooseScenario': 'Choose scenario',
+    'home.playNext': 'PLAY NEXT SESSION',
+    'home.allDone': 'All done!',
     'home.settings': 'Settings',
+    'home.progress': 'Progress',
 
     // Levels
     'levels.title': 'Scenario Packs',
     'levels.completed': '{done}/{total} completed',
     'levels.scrollMore': 'Scroll for more...',
     'levels.allLoaded': 'All {count} scenarios loaded ✓',
+    'levels.locked': 'Locked',
+    'levels.unlockRequirements': 'Complete 70% of previous level with avg score ≥ 60',
 
     // Decision
     'decision.noScenario': 'No scenario loaded',
@@ -67,13 +72,18 @@ export const translations = {
     'home.scenarioPacks': 'Gói tình huống',
     'home.available': '{count} tình huống',
     'home.chooseScenario': 'Chọn tình huống',
+    'home.playNext': 'TIẾP TỤC HỌC',
+    'home.allDone': 'Hoàn thành tất cả!',
     'home.settings': 'Cài đặt',
+    'home.progress': 'Tiến độ',
 
     // Levels
     'levels.title': 'Gói tình huống',
     'levels.completed': '{done}/{total} đã hoàn thành',
     'levels.scrollMore': 'Cuộn xuống để xem thêm...',
     'levels.allLoaded': 'Đã tải đủ {count} tình huống ✓',
+    'levels.locked': 'Khóa',
+    'levels.unlockRequirements': 'Hoàn thành 70% level trước với điểm trung bình ≥ 60',
 
     // Decision
     'decision.noScenario': 'Chưa có tình huống nào',

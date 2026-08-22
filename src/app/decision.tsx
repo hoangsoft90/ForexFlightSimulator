@@ -14,13 +14,14 @@ import { IconChevronLeft, IconChartCandle } from '@tabler/icons-react-native';
 import type { ActionType, SessionDecision, TradeResult } from '@/lib/types';
 import type { ExtendedReferenceZone } from '@/data/packs';
 import { useI18n } from '@/i18n/context';
+import { getContextPrompt } from '@/data/packs';
 
 type Phase = 'deciding' | 'reveal' | 'result';
 
 export default function DecisionScreen() {
   const { pack, setDecision, setAutopsy } = useSessionStore();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   const [phase, setPhase] = useState<Phase>('deciding');
   const [action, setAction] = useState<ActionType | null>(null);
@@ -140,8 +141,8 @@ export default function DecisionScreen() {
 
     // Compute scores
     const scores = computeAllScores(decision, pack.candles, zone);
-    const rootCause = findRootCause({ decision, candles: pack.candles, zone, scores });
-    const positiveNote = findPositiveNote({ decision, candles: pack.candles, zone, scores });
+    const rootCause = findRootCause({ decision, candles: pack.candles, zone, scores }, lang);
+    const positiveNote = findPositiveNote({ decision, candles: pack.candles, zone, scores }, lang);
 
     const autopsy = { decision, scores, rootCause, positiveNote };
     setAutopsy(scores, autopsy);
@@ -199,7 +200,7 @@ export default function DecisionScreen() {
 
       {/* Context prompt */}
       <View style={styles.promptContainer}>
-        <Text style={styles.promptText}>{pack.contextPrompt}</Text>
+        <Text style={styles.promptText}>{getContextPrompt(pack, lang)}</Text>
       </View>
 
       {/* Phase: deciding */}

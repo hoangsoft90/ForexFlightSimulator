@@ -16,7 +16,7 @@ export default function AutopsyScreen() {
   const { pack, decision, autopsy } = useSessionStore();
   const { completeSession, completePack } = useTraderStore();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   // Persist scores on first render (only runs once thanks to Zustand)
   useEffect(() => {
@@ -110,15 +110,15 @@ export default function AutopsyScreen() {
       {/* 3. Root cause — amber block, per design.md §3 */}
       <InsightBlock
         variant="error"
-        label={rootCause.label}
-        description={rootCause.description}
+        label={lang === 'vi' ? rootCause.labelVi : rootCause.label}
+        description={lang === 'vi' ? rootCause.descriptionVi : rootCause.description}
       />
 
       {/* 4. What you did right — green block, ALWAYS present per design.md §0 + plan §2.6 */}
       <InsightBlock
         variant="positive"
-        label={positiveNote.label}
-        description={positiveNote.description}
+        label={lang === 'vi' ? positiveNote.labelVi : positiveNote.label}
+        description={lang === 'vi' ? positiveNote.descriptionVi : positiveNote.description}
       />
 
       {/* Back to Home — show interstitial ad if ready, then reset stack to root */}
