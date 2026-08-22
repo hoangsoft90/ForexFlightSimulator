@@ -7,10 +7,10 @@
 
 export const config = {
   /** Master switch — when false, all ads are disabled (no banner, no interstitial, no rewarded). */
-  enableAds: false,
+  enableAds: true,
 
   /** When true, uses Google's test ad unit IDs (no real ads, no policy risk). Only matters when enableAds=true. */
-  testAds: true,
+  testAds: false,
 
   /** Sentry DSN for crash reporting. */
   sentryDsn: 'https://4522baf79fccfb0dd3ec00c8e4b73018@o4505474077753344.ingest.us.sentry.io/4511948214304768',
