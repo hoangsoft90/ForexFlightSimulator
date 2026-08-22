@@ -62,17 +62,21 @@ jobs:
           const fs = require('fs');
           let gradle = fs.readFileSync('android/app/build.gradle', 'utf8');
 
-          if (!gradle.includes('signingConfigs')) {
+          // Always add release signingConfig block after existing signingConfigs
+          if (!gradle.includes('signingConfigs.release')) {
             gradle = gradle.replace(
-              /android\s*\{/,
-              'android {\n    signingConfigs {\n        release {\n            storeFile file("release.keystore")\n            storePassword "forexflight123"\n            keyAlias "forexflight"\n            keyPassword "forexflight123"\n        }\n    }'
+              /signingConfigs\s*\{[^}]*}/,
+              (match) => match + '\n        release {\n            storeFile file("release.keystore")\n            storePassword "forexflight123"\n            keyAlias "forexflight"\n            keyPassword "forexflight123"\n        }'
             );
           }
 
-          gradle = gradle.replace(
-            /release\s*\{/,
-            'release {\n            signingConfig signingConfigs.release'
-          );
+          // Add signingConfig to buildTypes.release (only if not already there)
+          if (!gradle.includes('signingConfig signingConfigs.release')) {
+            gradle = gradle.replace(
+              /buildTypes\s*\{[\s\S]*?release\s*\{[^}]*}/,
+              (match) => match.replace(/release\s*\{/, 'release {\n            signingConfig signingConfigs.release')
+            );
+          }
 
           fs.writeFileSync('android/app/build.gradle', gradle);
           console.log('Signing config injected');
