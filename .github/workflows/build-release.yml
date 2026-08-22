@@ -1,11 +1,11 @@
-name: Build Release AAB (v2)
+name: Build Release AAB
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build Release AAB (v2)
+    name: Build Release AAB
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -43,54 +43,41 @@ jobs:
           sed -i 's|apply plugin: "expo-root-project"|ext.kotlinVersion = "2.3.0"\napply plugin: "expo-root-project"|' android/build.gradle
 
       - name: Decode release keystore
-        run: |
-          echo "$RELEASE_KEYSTORE_B64" | base64 -d > android/app/release.keystore
+        run: echo "$RELEASE_KEYSTORE_B64" | base64 -d > android/app/release.keystore
         env:
           RELEASE_KEYSTORE_B64: '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'
 
       - name: Create key.properties
         run: |
-          cat > android/key.properties << 'EOF'
+          cat > android/key.properties << 'KEYEOF'
           storePassword=forexflight123
           keyPassword=forexflight123
           keyAlias=forexflight
           storeFile=release.keystore
-          EOF
+          KEYEOF
 
       - name: Inject signing config into build.gradle
         run: |
-          node -e "
-            const fs = require('fs');
-            let gradle = fs.readFileSync('android/app/build.gradle', 'utf8');
+          cat > /tmp/inject-signing.js << 'JSEOF'
+          const fs = require('fs');
+          let gradle = fs.readFileSync('android/app/build.gradle', 'utf8');
 
-            // Add signingConfigs section after android { if not present
-            if (!gradle.includes('signingConfigs')) {
-              gradle = gradle.replace(
-                /android\s*\{/,
-                \`android {
-    signingConfigs {
-        release {
-            storeFile file('release.keystore')
-            storePassword 'forexflight123'
-            keyAlias 'forexflight'
-            keyPassword 'forexflight123'
-        }
-    }\`
-              );
-            }
-
-            // Add signingConfig to buildTypes release
+          if (!gradle.includes('signingConfigs')) {
             gradle = gradle.replace(
-              /buildTypes\s*\{\s*release\s*\{[^}]*}/s,
-              (match) => {
-                if (match.includes('signingConfig')) return match;
-                return match.replace(/release\s*\{/, 'release {\n            signingConfig signingConfigs.release');
-              }
+              /android\s*\{/,
+              'android {\n    signingConfigs {\n        release {\n            storeFile file("release.keystore")\n            storePassword "forexflight123"\n            keyAlias "forexflight"\n            keyPassword "forexflight123"\n        }\n    }'
             );
+          }
 
-            fs.writeFileSync('android/app/build.gradle', gradle);
-            console.log('Signing config injected successfully');
-          "
+          gradle = gradle.replace(
+            /release\s*\{/,
+            'release {\n            signingConfig signingConfigs.release'
+          );
+
+          fs.writeFileSync('android/app/build.gradle', gradle);
+          console.log('Signing config injected');
+          JSEOF
+          node /tmp/inject-signing.js
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -110,7 +97,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Release AAB (v2)
+      - name: Build Release AAB
         working-directory: android
         run: ./gradlew bundleRelease --no-daemon
 
