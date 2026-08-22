@@ -10,11 +10,13 @@ import { formatPrice, formatTime } from '@/lib/format';
 import { colors, spacing, font, radius } from '@/constants/theme';
 import { IconChevronLeft, IconClock } from '@tabler/icons-react-native';
 import { showInterstitial, preloadInterstitial } from '@/lib/ads';
+import { useI18n } from '@/i18n/context';
 
 export default function AutopsyScreen() {
   const { pack, decision, autopsy } = useSessionStore();
   const { completeSession, completePack } = useTraderStore();
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
 
   // Persist scores on first render (only runs once thanks to Zustand)
   useEffect(() => {
@@ -39,9 +41,9 @@ export default function AutopsyScreen() {
   if (!decision || !autopsy || !pack) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>No autopsy data</Text>
-        <TouchableOpacity onPress={() => router.replace('/')}>
-          <Text style={styles.linkText}>Go home</Text>
+        <Text style={styles.errorText}>{t('autopsy.noData')}</Text>
+        <TouchableOpacity onPress={() => router.replace('/')}> 
+          <Text style={styles.linkText}>{t('autopsy.goHome')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -54,17 +56,17 @@ export default function AutopsyScreen() {
     {
       time: decision.log[0]?.timestamp ?? 0,
       label: decision.action === 'wait'
-        ? 'Decided to wait'
-        : `Entered ${decision.action.toUpperCase()} at ${formatPrice(decision.entryPrice ?? 0)}`,
+        ? t('autopsy.decidedToWait')
+        : t('autopsy.enteredAt', { action: decision.action.toUpperCase(), price: formatPrice(decision.entryPrice ?? 0) }),
     },
     ...(decision.result && decision.result !== 'skipped'
       ? [{
           time: decision.log[decision.log.length - 1]?.timestamp ?? 0,
           label: decision.result === 'win'
-            ? `Take profit at ${formatPrice(decision.resultPrice ?? 0)}`
+            ? t('autopsy.takeProfit', { price: formatPrice(decision.resultPrice ?? 0) })
             : decision.result === 'loss'
-              ? `Stop loss at ${formatPrice(decision.resultPrice ?? 0)}`
-              : 'Closed at breakeven',
+              ? t('autopsy.stopLoss', { price: formatPrice(decision.resultPrice ?? 0) })
+              : t('autopsy.breakeven'),
         }]
       : []),
   ];
@@ -79,7 +81,7 @@ export default function AutopsyScreen() {
         <TouchableOpacity onPress={() => router.dismissAll()} style={styles.backBtn}>
           <IconChevronLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Trade Autopsy</Text>
+        <Text style={styles.headerTitle}>{t('autopsy.title')}</Text>
         <View style={styles.backBtn} />
       </View>
 
@@ -93,7 +95,7 @@ export default function AutopsyScreen() {
 
       {/* 2. Timeline — max 4 lines, HH:MM + clock icon + description */}
       <View style={styles.timelineSection}>
-        <Text style={styles.sectionLabel}>Timeline</Text>
+        <Text style={styles.sectionLabel}>{t('autopsy.timeline')}</Text>
         <View style={styles.timeline}>
           {timelineEntries.map((entry, i) => (
             <View key={i} style={styles.timelineRow}>
@@ -129,7 +131,7 @@ export default function AutopsyScreen() {
         }}
         activeOpacity={0.8}
       >
-        <Text style={styles.homeBtnText}>Back to profile</Text>
+        <Text style={styles.homeBtnText}>{t('autopsy.backToProfile')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

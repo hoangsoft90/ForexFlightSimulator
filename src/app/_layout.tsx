@@ -4,8 +4,13 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors } from '@/constants/theme';
 import { initAds, preloadInterstitial } from '@/lib/ads';
+import { initSentry, RootComponent } from '@/lib/sentry';
+import { I18nProvider } from '@/i18n/context';
 
-export default function RootLayout() {
+// Initialize Sentry as early as possible
+initSentry();
+
+function RootLayoutInner() {
   useEffect(() => {
     initAds();
     preloadInterstitial();
@@ -24,7 +29,20 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="decision" />
         <Stack.Screen name="autopsy" />
+        <Stack.Screen name="levels" />
+        <Stack.Screen name="settings" />
       </Stack>
     </SafeAreaProvider>
+  );
+}
+
+// Wrap with Sentry error boundary for crash reporting
+const SentryRootLayout = RootComponent(RootLayoutInner);
+
+export default function RootLayout() {
+  return (
+    <I18nProvider>
+      <SentryRootLayout />
+    </I18nProvider>
   );
 }

@@ -13,12 +13,14 @@ import { colors, spacing, font, radius } from '@/constants/theme';
 import { IconChevronLeft, IconChartCandle } from '@tabler/icons-react-native';
 import type { ActionType, SessionDecision, TradeResult } from '@/lib/types';
 import type { ExtendedReferenceZone } from '@/data/packs';
+import { useI18n } from '@/i18n/context';
 
 type Phase = 'deciding' | 'reveal' | 'result';
 
 export default function DecisionScreen() {
   const { pack, setDecision, setAutopsy } = useSessionStore();
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
 
   const [phase, setPhase] = useState<Phase>('deciding');
   const [action, setAction] = useState<ActionType | null>(null);
@@ -37,11 +39,11 @@ export default function DecisionScreen() {
   if (!pack) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>No scenario loaded</Text>
+        <Text style={styles.errorText}>{t('decision.noScenario')}</Text>
         <TouchableOpacity onPress={() => router.replace('/')}
           style={{ marginTop: 12 }}
         >
-          <Text style={styles.linkText}>Go home</Text>
+          <Text style={styles.linkText}>{t('decision.goBack')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -208,7 +210,7 @@ export default function DecisionScreen() {
       {/* Phase: reveal */}
       {phase === 'reveal' && (
         <View style={styles.revealContainer}>
-          <Text style={styles.revealText}>Market is moving...</Text>
+          <Text style={styles.revealText}>{t('decision.marketMoving')}</Text>
         </View>
       )}
 
@@ -222,7 +224,7 @@ export default function DecisionScreen() {
             action={action ?? undefined}
           />
           <TouchableOpacity style={styles.continueBtn} onPress={handleContinue} activeOpacity={0.8}>
-            <Text style={styles.continueText}>See autopsy →</Text>
+            <Text style={styles.continueText}>{t('decision.seeAutopsy')}</Text>
           </TouchableOpacity>
         </View>
       )}
