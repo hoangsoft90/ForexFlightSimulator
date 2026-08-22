@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Guide — Forex Flight Simulator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #F8F9FA;
+      color: #111827;
+      line-height: 1.7;
+      padding: 0;
+    }
+
+    /* Header */
+    .hero {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: #FFFFFF;
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .hero .tagline {
+      color: #94A3B8;
+      font-size: 16px;
+    }
+    .hero .version {
+      display: inline-block;
+      margin-top: 12px;
+      background: rgba(255,255,255,0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #94A3B8;
+    }
+
+    /* Nav */
+    .toc {
+      background: #FFFFFF;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toc-inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .toc h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .toc ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .toc a {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #F3F4F6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #374151;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .toc a:hover {
+      background: #E5E7EB;
+    }
+
+    /* Content */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #E5E7EB;
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: #111827;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 15px;
+      color: #374151;
+      margin-bottom: 14px;
+    }
+    strong {
+      color: #111827;
+    }
+
+    /* Lists */
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 14px;
+    }
+    li {
+      font-size: 15px;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    li strong {
+      color: #2563EB;
+    }
+
+    /* Cards */
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .card.green {
+      border-left: 4px solid #22C55E;
+      background: #F0FDF4;
+    }
+    .card.amber {
+      border-left: 4px solid #F59E0B;
+      background: #FFFBEB;
+    }
+    .card.red {
+      border-left: 4px solid #EF4444;
+      background: #FEF2F2;
+    }
+    .card.blue {
+      border-left: 4px solid #3B82F6;
+      background: #EFF6FF;
+    }
+    .card h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .card p {
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    /* Score chips */
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .score-item {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .score-item .icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .score-item .label {
+      font-size: 12px;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .score-item .value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 2px;
+    }
+
+    /* Level badges */
+    .level-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #F3F4F6;
+    }
+    .level-row:last-child {
+      border-bottom: none;
+    }
+    .level-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #FFF;
+      flex-shrink: 0;
+    }
+    .level-badge.l1 { background: #22C55E; }
+    .level-badge.l2 { background: #84CC16; }
+    .level-badge.l3 { background: #EAB308; }
+    .level-badge.l4 { background: #F97316; }
+    .level-badge.l5 { background: #EF4444; }
+    .level-info {
+      flex: 1;
+    }
+    .level-info .name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .level-info .desc {
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    /* Steps */
+    .step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #2563EB;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .step-content p {
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    /* Divider */
+    hr {
+      border: none;
+      border-top: 1px solid #E5E7EB;
+      margin: 32px 0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      color: #9CA3AF;
+      font-size: 13px;
+      border-top: 1px solid #E5E7EB;
+    }
+    .footer a {
+      color: #2563EB;
+      text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 22px; }
+      .score-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .container { padding: 20px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>📈 Forex Flight Simulator</h1>
+    <p class="tagline">Don't just learn to trade. Practice becoming a trader.</p>
+    <span class="version">User Guide · v1.0</span>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-inner">
+      <h2>Sections</h2>
+      <ul>
+        <li><a href="#quick-start">Quick Start</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#screens">Screens</a></li>
+        <li><a href="#levels">Levels</a></li>
+        <li><a href="#scoring">Scoring</a></li>
+        <li><a href="#tips">Tips</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Quick Start -->
+    <section id="quick-start">
+      <h2>🚀 Quick Start</h2>
+      <p>Get started in 30 seconds. No account needed — everything stays on your device.</p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Open the app</h4>
+          <p>You'll see your Trader Profile with 4 scores at 50 (fresh start).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Tap "PLAY NEXT SESSION"</h4>
+          <p>The app picks a scenario from your current level. Or tap "Choose scenario" to pick one yourself.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Read the chart, make a call</h4>
+          <p>You'll see a candlestick chart and a situation description. Choose <strong>Buy</strong>, <strong>Sell</strong>, or <strong>Wait</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>See the result + Autopsy</h4>
+          <p>The market plays out. Then you get an honest breakdown: what went wrong, what went right, and your updated scores.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- How It Works -->
+    <section id="how-it-works">
+      <h2>🧠 How It Works</h2>
+      <p>Forex Flight Simulator is a <strong>decision-training simulator</strong>, not a trading platform. Think of it like a flight simulator — but for trading decisions.</p>
+
+      <div class="card blue">
+        <h4>💡 The Core Loop</h4>
+        <p><strong>Observe → Decide → See Result → Learn → Repeat</strong></p>
+        <p style="margin-top: 8px;">Every scenario uses real historical price action. You're not predicting the future — you're practicing how to read what the market is showing you.</p>
+      </div>
+
+      <h3>What makes this different?</h3>
+      <ul>
+        <li><strong>No real money at risk.</strong> You're building instincts, not risking your savings.</li>
+        <li><strong>Honest feedback.</strong> The app scores your <em>decision quality</em>, not your profit/loss. A losing trade with good discipline scores higher than a winning trade with bad habits.</li>
+        <li><strong>Rule-based analysis.</strong> Every piece of feedback follows a specific rule — no vague "try harder" messages.</li>
+        <li><strong>Progressive difficulty.</strong> Start with basics, unlock harder scenarios as you improve.</li>
+      </ul>
+    </section>
+
+    <hr>
+
+    <!-- Screens -->
+    <section id="screens">
+      <h2>📱 Screen Guide</h2>
+
+      <h3>Home — Your Trader Profile</h3>
+      <p>The main screen shows your current level, 4 core scores, and your next action.</p>
+
+      <div class="score-grid">
+        <div class="score-item">
+          <div class="icon">🧠</div>
+          <div class="label">Reading</div>
+          <div class="value">62</div>
+        </div>
+        <div class="score-item">
+          <div class="icon">🎯</div>
+          <div class="label">Entry</div>
+          <div class="value">58</div>
+        </div>
+        <div class="score-item">
+          <div class="icon">🛡</div>
+          <div class="label">Risk</div>
+          <div class="value">71</div>
+        </div>
+        <div class="score-item">
+          <div class="icon">🧘</div>
+          <div class="label">Discipline</div>
+          <div class="value">55</div>
+        </div>
+      </div>
+
+      <div class="card green">
+        <h4>Reading</h4>
+        <p>How well you identify chart patterns and market structure. Improves when you pick the right direction at key levels.</p>
+      </div>
+      <div class="card blue">
+        <h4>Entry</h4>
+        <p>How precise your timing is. Did you enter at the optimal zone or chase the move?</p>
+      </div>
+      <div class="card amber">
+        <h4>Risk</h4>
+        <p>How well you manage position sizing and stop-loss. The app rewards risk within recommended ranges (0.5–1% per trade).</p>
+      </div>
+      <div class="card red">
+        <h4>Discipline</h4>
+        <p>Do you follow your plan or act on impulse? Measures FOMO entries, emotional SL moves, and patience.</p>
+      </div>
+
+      <hr>
+
+      <h3>Decision UI — The Scenario Player</h3>
+      <p>This is where the training happens. You'll see:</p>
+      <ol>
+        <li><strong>Candlestick chart</strong> — real historical price action on XAUUSD (Gold) M15 timeframe</li>
+        <li><strong>Context prompt</strong> — a short description of what's happening ("Price rejected at resistance, hammer forming")</li>
+        <li><strong>3 action buttons</strong> — Buy / Sell / Wait</li>
+      </ol>
+
+      <div class="card amber">
+        <h4>⚠️ "Wait" is a valid choice!</h4>
+        <p>Sometimes the best trade is no trade. In advanced levels, choosing Wait at the right time earns you bonus Discipline points.</p>
+      </div>
+
+      <p>After you tap a button, the chart advances a few more candles to show what happened next. Then you move to the Autopsy.</p>
+
+      <hr>
+
+      <h3>Trade Autopsy — Learning Moment</h3>
+      <p>This is the most important screen. It shows:</p>
+
+      <ol>
+        <li><strong>Result badge</strong> — Win, Loss, or "Avoided bad setup"</li>
+        <li><strong>Timeline</strong> — key moments (entry, SL hit, result)</li>
+        <li><strong>Root cause</strong> (amber block) — the specific rule that triggered. Examples:
+          <ul>
+            <li>"FOMO Entry — entered within 1 min of strong candle"</li>
+            <li>"Emotional SL — moved stop loss after seeing profit"</li>
+            <li>"Late Entry — entered after the setup already played out"</li>
+          </ul>
+        </li>
+        <li><strong>What you did right</strong> (green block) — always shown, even on losing trades. This is what keeps you motivated.</li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <!-- Levels -->
+    <section id="levels">
+      <h2>📊 Level System</h2>
+      <p>The app has 5 difficulty levels. Complete scenarios and maintain a quality score ≥ 60 to unlock the next level.</p>
+
+      <div class="level-row">
+        <div class="level-badge l1">1</div>
+        <div class="level-info">
+          <div class="name">🟢 Survive — 30 scenarios</div>
+          <div class="desc">Single candle patterns: Hammer, Doji, Engulfing, Marubozu. Learn the basics.</div>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-badge l2">2</div>
+        <div class="level-info">
+          <div class="name">🟢 Survive+ — 25 scenarios</div>
+          <div class="desc">Double/triple candle patterns: Harami, Morning Star, Three White Soldiers. Unlock SL/TP customization.</div>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-badge l3">3</div>
+        <div class="level-info">
+          <div class="name">🟡 Read — 20 scenarios</div>
+          <div class="desc">Chart patterns: Triangle, Wedge, Cup & Handle, Double Top/Bottom. Understand what the chart is telling you.</div>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-badge l4">4</div>
+        <div class="level-info">
+          <div class="name">🟠 Decide — 15 scenarios</div>
+          <div class="desc">Contextual setups: Fibonacci, Divergence, Liquidity Sweep, Order Block. Know when NOT to trade.</div>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-badge l5">5</div>
+        <div class="level-info">
+          <div class="name">🔴 Perform — 10 scenarios</div>
+          <div class="desc">Complex multi-factor setups. Build your personal trading system.</div>
+        </div>
+      </div>
+
+      <div class="card green">
+        <h4>🔓 Unlock Rules</h4>
+        <p>Level unlocks when you reach <strong>average score ≥ 60</strong> AND complete <strong>≥ 70%</strong> of the current level. No time limits — take as many attempts as you need.</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Scoring -->
+    <section id="scoring">
+      <h2>⚖️ How Scoring Works</h2>
+      <p>Every decision is scored on 6 components. Your 4 visible scores (Reading, Entry, Risk, Discipline) are averages of these components.</p>
+
+      <div class="card">
+        <h4>Entry Score</h4>
+        <p>How close your entry was to the optimal zone for that setup. Scored against a pre-defined reference zone — not against hindsight.</p>
+      </div>
+      <div class="card">
+        <h4>Risk Score</h4>
+        <p>How close your risk per trade is to the recommended range (0.5–1%). Higher score = closer to optimal.</p>
+      </div>
+      <div class="card">
+        <h4>RR Score (Risk/Reward)</h4>
+        <p>Whether the trade's potential reward justified the risk taken. Minimum 1:2 RR recommended for most setups.</p>
+      </div>
+      <div class="card amber">
+        <h4>FOMO Score</h4>
+        <p>Did you enter too quickly after a strong candle? Entering within 1–2 minutes of a big move = FOMO penalty.</p>
+      </div>
+      <div class="card">
+        <h4>Patience Score</h4>
+        <p>Did you wait for the setup to fully form, or did you jump in early before confirmation?</p>
+      </div>
+      <div class="card green">
+        <h4>Discipline Score</h4>
+        <p>Did you stick to your plan? No emotional SL moves, no revenge trading, no impulsive entries.</p>
+      </div>
+
+      <div class="card blue">
+        <h4>💡 Key Principle</h4>
+        <p><strong>We score your decisions, not your profits.</strong> A losing trade with perfect discipline scores higher than a winning trade taken out of FOMO. This is how real traders improve.</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Tips -->
+    <section id="tips">
+      <h2>💡 Tips for Getting the Most Out of the App</h2>
+
+      <div class="card green">
+        <h4>1. Don't rush the "Wait" button</h4>
+        <p>Many beginners never tap Wait. But professional traders say "no" to most setups. Practice patience — it's a skill.</p>
+      </div>
+
+      <div class="card green">
+        <h4>2. Read the Autopsy carefully</h4>
+        <p>The root cause block tells you exactly what rule you broke. Write it down. If you see the same root cause twice — that's your #1 habit to fix.</p>
+      </div>
+
+      <div class="card green">
+        <h4>3. Play 3–5 sessions per day</h4>
+        <p>Short, focused practice beats long grinding sessions. Each scenario takes about 1–2 minutes.</p>
+      </div>
+
+      <div class="card green">
+        <h4>4. Replay levels you've completed</h4>
+        <p>You can always go back to completed scenarios. Retrying with fresh eyes reveals how much you've improved.</p>
+      </div>
+
+      <div class="card green">
+        <h4>5. Check your Discipline score</h4>
+        <p>Discipline is the hardest score to improve but the most important for real trading. If it's lagging, focus on patience and avoiding FOMO.</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2>❓ FAQ</h2>
+
+      <div class="card">
+        <h4>Is this real trading?</h4>
+        <p>No. This is a training simulator. No real trades are executed, no money is at risk, and no broker accounts are connected. All scenarios use historical price data for educational purposes.</p>
+      </div>
+
+      <div class="card">
+        <h4>Do I need a trading account?</h4>
+        <p>No. You don't need any trading account, brokerage, or financial setup. Just open the app and start practicing.</p>
+      </div>
+
+      <div class="card">
+        <h4>What markets are covered?</h4>
+        <p>Currently XAUUSD (Gold) on M15 timeframe. More markets and timeframes will be added in future updates.</p>
+      </div>
+
+      <div class="card">
+        <h4>Why is "Wait" sometimes the right answer?</h4>
+        <p>Professional traders often wait for the right setup rather than forcing a trade. In the app, choosing Wait at the right time earns Discipline points. Waiting is a skill.</p>
+      </div>
+
+      <div class="card">
+        <h4>Can I change the language?</h4>
+        <p>Yes. Go to Settings (gear icon on Home screen) and switch between English 🇬🇧 and Vietnamese 🇻🇳. All text — including scenario descriptions and feedback — will change.</p>
+      </div>
+
+      <div class="card">
+        <h4>What does "FOMO Entry" mean?</h4>
+        <p>FOMO = Fear Of Missing Out. It means you entered a trade too quickly after a big candle move, without waiting for confirmation. This is one of the most common mistakes new traders make.</p>
+      </div>
+
+      <div class="card">
+        <h4>How do I reset my progress?</h4>
+        <p>Go to Settings → Reset All Data. This will clear all scores and completed scenarios. You'll start fresh from Level 1.</p>
+      </div>
+
+      <div class="card">
+        <h4>Does the app work offline?</h4>
+        <p>Yes. All data is stored on your device. No internet connection is needed to use the app (except for loading ads if enabled).</p>
+      </div>
+
+      <div class="card">
+        <h4>Is my data private?</h4>
+        <p>Yes. All your trading data, scores, and preferences are stored locally on your device. We have no access to your data. No account or login is required.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Forex Flight Simulator · v1.0</p>
+    <p style="margin-top: 4px;">Questions? Contact us at <a href="mailto:haibasoftware@gmail.com">haibasoftware@gmail.com</a></p>
+    <p style="margin-top: 8px;"><a href="https://forexflightsimulator.web.app/privacy-policy.html">Privacy Policy</a></p>
+  </div>
+
+</body>
+</html>
