@@ -32,19 +32,19 @@ const BannerAdSizeNative = nativeAds?.BannerAdSize;
 const platform = Platform.OS as 'android' | 'ios';
 
 export function getBannerAdUnitId(): string {
-  if (!isNative || !TestIds) return '';
+  if (!isNative || !TestIds || !config.enableAds) return '';
   if (config.testAds) return TestIds.ADAPTIVE_BANNER;
   return config.adUnits.banner[platform];
 }
 
 export function getInterstitialAdUnitId(): string {
-  if (!isNative || !TestIds) return '';
+  if (!isNative || !TestIds || !config.enableAds) return '';
   if (config.testAds) return TestIds.INTERSTITIAL;
   return config.adUnits.interstitial[platform];
 }
 
 export function getRewardedAdUnitId(): string {
-  if (!isNative || !TestIds) return '';
+  if (!isNative || !TestIds || !config.enableAds) return '';
   if (config.testAds) return TestIds.REWARDED;
   return config.adUnits.rewarded[platform];
 }
@@ -54,7 +54,7 @@ export function getRewardedAdUnitId(): string {
 let initialized = false;
 
 export async function initAds(): Promise<void> {
-  if (!isNative || !mobileAds || initialized) return;
+  if (!isNative || !mobileAds || !config.enableAds || initialized) return;
   try {
     await mobileAds().initialize();
     initialized = true;
@@ -73,7 +73,7 @@ let interstitialLoaded = false;
  * so it's ready when the user finishes an autopsy.
  */
 export function preloadInterstitial(): void {
-  if (!isNative || !InterstitialAd || !AdEventType || interstitialLoaded) return;
+  if (!isNative || !InterstitialAd || !AdEventType || !config.enableAds || interstitialLoaded) return;
 
   const adUnitId = getInterstitialAdUnitId();
   if (!adUnitId) return;
@@ -121,7 +121,7 @@ let rewardedCallback: (() => void) | null = null;
  * Preload a rewarded ad.
  */
 export function preloadRewarded(): void {
-  if (!isNative || !RewardedAd || !AdEventType || rewardedLoaded) return;
+  if (!isNative || !RewardedAd || !AdEventType || !config.enableAds || rewardedLoaded) return;
 
   const adUnitId = getRewardedAdUnitId();
   if (!adUnitId) return;

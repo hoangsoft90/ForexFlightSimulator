@@ -6,7 +6,10 @@
  */
 
 export const config = {
-  /** When true, uses Google's test ad unit IDs (no real ads, no policy risk). */
+  /** Master switch — when false, all ads are disabled (no banner, no interstitial, no rewarded). */
+  enableAds: false,
+
+  /** When true, uses Google's test ad unit IDs (no real ads, no policy risk). Only matters when enableAds=true. */
   testAds: true,
 
   /** Sentry DSN for crash reporting. */
