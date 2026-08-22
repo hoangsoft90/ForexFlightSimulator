@@ -48,8 +48,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
-      - name: Create sentry.properties (skip source map upload)
-        run: echo -e 'defaults.org=placeholder\ndefaults.auth.token=placeholder\ncli.executable=node_modules/@sentry/cli/bin/sentry-cli' > android/sentry.properties
+      - name: Disable Sentry source map upload
+        run: |
+          echo 'sentry.upload=false' >> android/gradle.properties
+          echo 'sentry.debug=true' >> android/gradle.properties
 
       - name: Build Release AAB
         working-directory: android
