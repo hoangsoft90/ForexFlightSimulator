@@ -1,11 +1,8 @@
 /**
  * App configuration — AdMob settings.
  *
- * MVP: test_ads=true by default.
- * Before deploying to stores:
- *   1. Set test_ads = false
- *   2. Replace ad unit IDs below with your real AdMob IDs
- *   3. Update App IDs in app.json (androidAppId / iosAppId)
+ * test_ads=true by default — uses Google test IDs to avoid policy violations.
+ * Set test_ads = false before production release.
  */
 
 export const config = {
@@ -17,13 +14,20 @@ export const config = {
 
   /** Real ad unit IDs — only used when testAds = false. */
   adUnits: {
+    app: {
+      android: 'ca-app-pub-6917313063209470~6649126214',
+    },
     banner: {
-      android: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
-      ios: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+      android: 'ca-app-pub-6917313063209470/5870552545',
+      ios: 'ca-app-pub-6917313063209470/5870552545',
     },
     interstitial: {
-      android: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
-      ios: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+      android: 'ca-app-pub-6917313063209470/6373899247',
+      ios: 'ca-app-pub-6917313063209470/6373899247',
+    },
+    rewarded: {
+      android: 'ca-app-pub-6917313063209470/8177935507',
+      ios: 'ca-app-pub-6917313063209470/8177935507',
     },
   },
 } as const;

@@ -44,5 +44,4 @@ example
 
 # Project skills (may contain tokens)
 .agents/
-google-services.json
 GoogleService-Info.plist

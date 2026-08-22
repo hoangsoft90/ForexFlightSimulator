@@ -22,6 +22,7 @@ const nativeAds = Platform.select({
 
 const mobileAds = nativeAds?.default ?? nativeAds?.MobileAds;
 const InterstitialAd = nativeAds?.InterstitialAd;
+const RewardedAd = nativeAds?.RewardedAd;
 const AdEventType = nativeAds?.AdEventType;
 const TestIds = nativeAds?.TestIds;
 const BannerAdSizeNative = nativeAds?.BannerAdSize;
@@ -40,6 +41,12 @@ export function getInterstitialAdUnitId(): string {
   if (!isNative || !TestIds) return '';
   if (config.testAds) return TestIds.INTERSTITIAL;
   return config.adUnits.interstitial[platform];
+}
+
+export function getRewardedAdUnitId(): string {
+  if (!isNative || !TestIds) return '';
+  if (config.testAds) return TestIds.REWARDED;
+  return config.adUnits.rewarded[platform];
 }
 
 // ─── Initialization ──────────────────────────────────────────────────────────
@@ -101,6 +108,61 @@ export function showInterstitial(): boolean {
   interstitialInstance.show();
   interstitialLoaded = false;
   interstitialInstance = null;
+  return true;
+}
+
+// ─── Rewarded Ad ──────────────────────────────────────────────────────────
+
+let rewardedInstance: any = null;
+let rewardedLoaded = false;
+let rewardedCallback: (() => void) | null = null;
+
+/**
+ * Preload a rewarded ad.
+ */
+export function preloadRewarded(): void {
+  if (!isNative || !RewardedAd || !AdEventType || rewardedLoaded) return;
+
+  const adUnitId = getRewardedAdUnitId();
+  if (!adUnitId) return;
+
+  rewardedInstance = RewardedAd.createForAdRequest(adUnitId, {
+    requestNonPersonalizedAdsOnly: false,
+  });
+
+  rewardedInstance.addAdEventListener(AdEventType.LOADED, () => {
+    rewardedLoaded = true;
+  });
+
+  rewardedInstance.addAdEventListener(AdEventType.EARNED_REWARD, () => {
+    rewardedCallback?.();
+    rewardedCallback = null;
+  });
+
+  rewardedInstance.addAdEventListener(AdEventType.CLOSED, () => {
+    rewardedLoaded = false;
+    rewardedInstance = null;
+  });
+
+  rewardedInstance.addAdEventListener(AdEventType.ERROR, () => {
+    rewardedLoaded = false;
+    rewardedInstance = null;
+  });
+
+  rewardedInstance.load();
+}
+
+/**
+ * Show the preloaded rewarded ad. Calls `onRewarded` when user earns the reward.
+ * Returns true if shown, false if not ready.
+ */
+export function showRewarded(onRewarded: () => void): boolean {
+  if (!rewardedInstance || !rewardedLoaded) return false;
+
+  rewardedCallback = onRewarded;
+  rewardedInstance.show();
+  rewardedLoaded = false;
+  rewardedInstance = null;
   return true;
 }
 
