@@ -22,6 +22,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Remove Sentry plugin before prebuild
+        run: |
+          # Remove @sentry/react-native from plugins so android/ won't have sentry.gradle
+          node -e "
+            const fs = require('fs');
+            const app = JSON.parse(fs.readFileSync('app.json','utf8'));
+            app.expo.plugins = (app.expo.plugins||[]).filter(p => {
+              const name = typeof p === 'string' ? p : p[0];
+              return !name.includes('sentry');
+            });
+            fs.writeFileSync('app.json', JSON.stringify(app, null, 2)+'\n');
+          "
+
       - name: Expo prebuild (generate android/)
         run: npx expo prebuild --platform android --clean
 
@@ -47,11 +60,6 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
-
-      - name: Disable Sentry source map upload
-        run: |
-          echo 'sentry.upload=false' >> android/gradle.properties
-          echo 'sentry.debug=true' >> android/gradle.properties
 
       - name: Build Release AAB
         working-directory: android
